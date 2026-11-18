@@ -3,19 +3,34 @@ import random
 # init FASTENED
 character = ["O", "X"]
 gameLoop = True
+winning_positions = (
+    # Horizontal
+    ((0, 0), (0, 1), (0, 2)),
+    ((1, 0), (1, 1), (1, 2)),
+    ((2, 0), (2, 1), (2, 2)),
+
+    # Vertical
+    ((0, 0), (1, 0), (2, 0)),
+    ((0, 1), (1, 1), (2, 1)),
+    ((0, 2), (1, 2), (2, 2)),
+
+    # Diagonal
+    ((0, 0), (1, 1), (2, 2)),
+    ((0, 2), (1, 1), (2, 0))
+)
 
 
 # calculate placement
 def place_cal(pickedNumber):
     if pickedNumber < 3:
         # Row 1
-        return 1, (pickedNumber)
+        return 0, (pickedNumber-1)
     elif pickedNumber <= 6:
         # Row 2
-        return 2, (pickedNumber-3)
+        return 1, (pickedNumber-4)
     elif pickedNumber <= 8:
         # row 3
-        return 3, (pickedNumber-6)
+        return 2, (pickedNumber-7)
     else:
         return None
 
@@ -24,19 +39,11 @@ def place(answerinput):
     global errorName
     indexChar = int(answerinput)
 
-    if indexChar < 3:
-        # row 1
-        board[0][indexChar] =  character[player]
-    elif indexChar <= 6:
-        # row 2
-        board[1][indexChar-3] =  character[player]
-    elif indexChar <= 9:
-        # row 3
-        board[2][indexChar-6] =  character[player]
+    inputNum = place_cal(indexChar)
+    if not indexChar > 8:
+        board[inputNum[0]][inputNum[1]] = character[player]
     else:
         errorName = "List out of Range, "
-        MainLoop()
-    # checkMate()
 
 def PlayerWin():
     print("player has won")
@@ -53,7 +60,7 @@ def checkMate():
     while not checkFound:
         if board[rowIndex][colIndex] == character[player]:
             CurrentRowCount +=1
-            if colIndex >= 3:
+            if colIndex >= 2:
                 # check if this current row is full
                 if CurrentRowCount >= 3:
                     # Player has current row filled and won
@@ -67,11 +74,10 @@ def checkMate():
                 rowIndex += 1
             else:
                 colIndex +=1
+        else:
+            # so player  
         
     
-
-
-
 
 
 # init
@@ -95,7 +101,7 @@ def ShowBoard():
     for i in range(3):
         for i in range(3):
             print(board[rowNumber][i])
-    rowNumber +=1
+        rowNumber +=1
 
 def MainLoop():
     while gameLoop:
@@ -103,10 +109,11 @@ def MainLoop():
         checkMate()
         ShowBoard()
         try:
-            answer = input(f"{errorName}You are {character[player]}, (0-8) where u want to place it? ")
+            answer = int(input(f"{errorName}You are {character[player]}, (0-8) where u want to place it? "))
 
+            # - is - not X or O (player, Bot)
             calResult = place_cal(answer)
-            if board[calResult[0]][calResult[1]] != character[player] or board[calResult[0]][calResult[1]] != character[bot]:
+            if board[calResult[0]][calResult[1]] != character[player] and board[calResult[0]][calResult[1]] != character[bot]:
                 place(answer)
                 errorName = ""
                 

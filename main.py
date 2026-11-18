@@ -24,13 +24,13 @@ winning_positions = (
 def place_cal(pickedNumber):
     if pickedNumber < 3:
         # Row 1
-        return 0, (pickedNumber-1)
+        return 0, (pickedNumber)
     elif pickedNumber <= 6:
         # Row 2
-        return 1, (pickedNumber-4)
+        return 1, (pickedNumber-1)
     elif pickedNumber <= 8:
         # row 3
-        return 2, (pickedNumber-7)
+        return 2, (pickedNumber-2)
     else:
         return None
 
@@ -46,38 +46,34 @@ def place(answerinput):
         errorName = "List out of Range, "
 
 def PlayerWin():
+    global gameLoop
     print("player has won")
+    gameLoop = False
 
 def BotWin():
+    global gameLoop
     print("bot has won")
+    gameLoop = False
 
 def checkMate():
-    CurrentRowCount = 0
-    rowIndex = 0
-    colIndex = 0
-    checkFound = False
-    # row check
-    while not checkFound:
-        if board[rowIndex][colIndex] == character[player]:
-            CurrentRowCount +=1
-            if colIndex >= 2:
-                # check if this current row is full
-                if CurrentRowCount >= 3:
-                    # Player has current row filled and won
-                    PlayerWin()
-                    checkFound = True
-                else:
-                    CurrentRowCount = 0
-                    checkFound = True
+    # lets pick 1 by 1 a number
+    for i in range (8):
+        # lets pick a winning position
+        first, second, third = winning_positions[i]
 
-                colIndex = 0
-                rowIndex += 1
+        # now we have 3 winning positions. lets check wheater they match
+        if board[first[0]][first[1]] == board[second[0]][second[1]] == board[third[0]][third[1]]:
+            # so now in these 3 cord we have also 3 the same value. lets check wheater they are the player or not.
+            if board[first[0]][first[1]] == character[player]:
+                # player match he won
+                PlayerWin()
+            elif board[first[0]][first[1]] == character[bot]:
+                # bot has won
+                BotWin()
             else:
-                colIndex +=1
-        else:
-            # so player  
-        
-    
+                # prob -. means nobody won. skip
+                continue
+
 
 
 # init
@@ -97,11 +93,11 @@ errorName = ""
 # this means 0 is a O; and 1 is a X
 
 def ShowBoard():
-    rowNumber = 0
     for i in range(3):
+        colNumber = i
         for i in range(3):
-            print(board[rowNumber][i])
-        rowNumber +=1
+            ShowRow = board[colNumber][i]
+        print(ShowRow)
 
 def MainLoop():
     while gameLoop:
